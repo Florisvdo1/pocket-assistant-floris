@@ -3,130 +3,540 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#070707" />
+  <meta name="theme-color" content="#0b0b0b" />
   <title>Pocket Assistant Floris</title>
+
   <style>
     :root{
-      --bg:#070707; --panel:#0c0c0c; --txt:#f6f4ee; --muted:#bdb8aa;
-      --gold:#d4b46a; --line:rgba(212,180,106,.22);
-      --shadow: 0 18px 60px rgba(0,0,0,.55); --radius:20px; --pad:18px; --max:1120px;
+      --bg:#0b0b0b;
+      --text:#f5f5f5;
+      --muted:rgba(245,245,245,.62);
+      --gold:#d7b56d;
+      --gold2:#a8832f;
+      --line:rgba(215,181,109,.28);
+      --shadow: 0 18px 60px rgba(0,0,0,.55);
+      --r1:18px;
+      --r2:26px;
     }
+
     *{ box-sizing:border-box; }
     html,body{ height:100%; }
     body{
       margin:0;
       background:
-        radial-gradient(1200px 900px at 15% 10%, rgba(212,180,106,.14), transparent 55%),
-        radial-gradient(1000px 700px at 85% 25%, rgba(212,180,106,.08), transparent 55%),
-        linear-gradient(180deg, #070707 0%, #040404 100%);
-      color:var(--txt);
+        radial-gradient(1000px 800px at 18% 10%, rgba(215,181,109,.12), transparent 55%),
+        radial-gradient(800px 700px at 85% 20%, rgba(215,181,109,.08), transparent 55%),
+        linear-gradient(180deg, #070707, #0b0b0b 40%, #050505);
+      color:var(--text);
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-      -webkit-font-smoothing: antialiased;
-      text-rendering: optimizeLegibility;
-      overflow-x:hidden;
+      overflow:hidden;
     }
+
     .wrap{
-      min-height:100svh;
-      padding: calc(18px + env(safe-area-inset-top)) calc(16px + env(safe-area-inset-right))
-               calc(18px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left));
-      display:flex; justify-content:center;
+      height:100%;
+      padding: max(14px, env(safe-area-inset-top)) max(14px, env(safe-area-inset-right))
+               max(14px, env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left));
+      display:flex;
+      flex-direction:column;
+      gap:12px;
     }
-    .shell{ width:min(var(--max), 100%); display:flex; flex-direction:column; gap:16px; }
+
     header{
-      border:1px solid var(--line);
-      background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
-      border-radius: var(--radius);
-      padding: 18px;
-      box-shadow: var(--shadow);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      min-height:44px;
     }
-    h1{ margin:0; font-size:18px; letter-spacing:.16em; text-transform:uppercase; }
-    .sub{ margin:8px 0 0 0; color:var(--muted); font-size:13px; line-height:1.35; }
-    .grid{ display:grid; grid-template-columns: 1fr; gap:14px; }
-    @media (min-width: 860px){ .grid{ grid-template-columns: 1fr 1fr; } }
-    .tile{
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width:0;
+    }
+
+    .mark{
+      width:34px;
+      height:34px;
+      border-radius:12px;
       border:1px solid var(--line);
-      background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
-      border-radius: var(--radius);
+      background:
+        linear-gradient(135deg, rgba(215,181,109,.22), rgba(215,181,109,.06)),
+        radial-gradient(14px 14px at 32% 30%, rgba(255,255,255,.18), transparent 60%),
+        linear-gradient(180deg, rgba(0,0,0,.30), rgba(0,0,0,.70));
+      box-shadow: var(--shadow);
+      flex:0 0 auto;
+      position:relative;
+      overflow:hidden;
+    }
+    .mark:after{
+      content:"";
+      position:absolute;
+      inset:8px;
+      border-radius:10px;
+      border:1px solid rgba(215,181,109,.35);
+      opacity:.9;
+    }
+
+    .title{
+      display:flex;
+      flex-direction:column;
+      min-width:0;
+      line-height:1.05;
+    }
+    .title strong{
+      font-size:14px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      letter-spacing:.2px;
+    }
+    .title span{
+      font-size:12px;
+      color:var(--muted);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .btn{
+      appearance:none;
+      border:1px solid rgba(215,181,109,.35);
+      background: linear-gradient(180deg, rgba(215,181,109,.14), rgba(0,0,0,.25));
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:14px;
+      font-size:12px;
+      cursor:pointer;
+      user-select:none;
+    }
+    .btn.secondary{
+      border:1px solid rgba(255,255,255,.14);
+      background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(0,0,0,.25));
+      color:rgba(245,245,245,.86);
+    }
+    .btn:active{ transform: translateY(1px); }
+
+    main{
+      flex:1;
+      min-height:0;
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:12px;
+    }
+
+    @media (min-width: 920px) and (orientation: landscape){
+      main{ grid-template-columns: 1.35fr .65fr; }
+    }
+
+    .panel{
+      min-height:0;
+      border:1px solid var(--line);
+      border-radius: var(--r1);
+      background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(0,0,0,.25));
       box-shadow: var(--shadow);
       overflow:hidden;
-      aspect-ratio: 1 / 1;
     }
-    .inner{ height:100%; padding: var(--pad); display:flex; flex-direction:column; gap:12px; }
-    h2{ margin:0; font-size:14px; letter-spacing:.14em; text-transform:uppercase; }
-    p{ margin:0; color:var(--muted); font-size:13px; line-height:1.4; }
-    .divider{ height:1px; background: linear-gradient(90deg, transparent, rgba(212,180,106,.35), transparent); opacity:.65; }
-    .box{
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(0,0,0,.22);
-      border-radius:14px;
+
+    .talkPanel{
+      display:flex;
+      align-items:center;
+      justify-content:center;
       padding:14px;
-      display:flex; align-items:center; justify-content:center;
-      min-height: 140px;
     }
-    footer{ color: rgba(245,242,235,.55); font-size:12px; padding: 6px 2px 0 2px; }
+
+    /* Golden square stage that fills most of the viewport */
+    .stage{
+      width: min(96vw, 96vh, 860px);
+      height: min(96vw, 96vh, 860px);
+      border-radius: var(--r2);
+      border: 1px solid rgba(215,181,109,.44);
+      background:
+        radial-gradient(1200px 800px at 35% 20%, rgba(215,181,109,.14), transparent 58%),
+        linear-gradient(135deg, rgba(215,181,109,.10), rgba(255,255,255,.02)),
+        linear-gradient(180deg, rgba(0,0,0,.45), rgba(0,0,0,.10));
+      box-shadow: 0 26px 90px rgba(0,0,0,.62);
+      display:flex;
+      flex-direction:column;
+      overflow:hidden;
+      position:relative;
+    }
+
+    .stageTop{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding:12px;
+      border-bottom: 1px solid rgba(215,181,109,.18);
+      background: linear-gradient(180deg, rgba(0,0,0,.45), rgba(0,0,0,.12));
+    }
+
+    .pill{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 12px;
+      border-radius:999px;
+      border:1px solid rgba(215,181,109,.28);
+      background: linear-gradient(180deg, rgba(215,181,109,.10), rgba(255,255,255,.02));
+      font-size:12px;
+      color:rgba(245,245,245,.92);
+      min-width:0;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .pill b{ color:var(--gold); font-weight:700; }
+
+    .stageBody{
+      flex:1;
+      min-height:0;
+      padding:12px;
+      display:flex;
+    }
+
+    /* White square blocks aesthetic behind the widget */
+    .whiteFrame{
+      flex:1;
+      min-height:0;
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,.16);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.06), rgba(0,0,0,.18)),
+        repeating-linear-gradient(
+          90deg,
+          rgba(255,255,255,.05) 0px,
+          rgba(255,255,255,.05) 18px,
+          rgba(0,0,0,0) 18px,
+          rgba(0,0,0,0) 36px
+        );
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,.12);
+      overflow:hidden;
+      display:flex;
+    }
+
+    /* Make widget fill the frame */
+    elevenlabs-convai{
+      width:100%;
+      height:100%;
+      display:block;
+    }
+
+    .sidePanel{
+      padding:14px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      min-height:0;
+    }
+
+    .tile{
+      border:1px solid rgba(255,255,255,.10);
+      border-radius: var(--r1);
+      background: linear-gradient(180deg, rgba(0,0,0,.38), rgba(0,0,0,.12));
+      padding:12px;
+    }
+
+    .tile h3{
+      margin:0 0 8px 0;
+      font-size:12px;
+      letter-spacing:.2px;
+      color:rgba(245,245,245,.92);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+
+    .tile p{
+      margin:0;
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.35;
+    }
+
+    input[type="range"]{
+      width:100%;
+      accent-color: var(--gold);
+      margin-top:10px;
+    }
+
+    .row{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+      margin-top:10px;
+    }
+
+    .searchRow{
+      display:flex;
+      gap:10px;
+      margin-top:10px;
+    }
+    .searchRow input{
+      flex:1;
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 14px;
+      padding:10px 12px;
+      font-size:12px;
+      outline:none;
+    }
+
+    .note{
+      margin-top:10px;
+      font-size:11px;
+      color: rgba(245,245,245,.52);
+      line-height:1.25;
+    }
+
+    .toast{
+      position: fixed;
+      left: 14px;
+      right: 14px;
+      bottom: max(14px, env(safe-area-inset-bottom));
+      padding:10px 12px;
+      border-radius: 16px;
+      border: 1px solid rgba(215,181,109,.22);
+      background: rgba(0,0,0,.55);
+      backdrop-filter: blur(10px);
+      color: rgba(245,245,245,.92);
+      font-size:12px;
+      display:none;
+      z-index: 9;
+    }
+    .toast.show{ display:block; }
   </style>
 </head>
 
 <body>
   <div class="wrap">
-    <div class="shell">
-      <header>
-        <h1>OEVER.ART</h1>
-        <p class="sub">Audio Native (narration) + Voice Agent (interactive). If something fails, it is almost always allowlist/auth settings.</p>
-      </header>
+    <header>
+      <div class="brand">
+        <div class="mark" aria-hidden="true"></div>
+        <div class="title">
+          <strong>Pocket Assistant Floris</strong>
+          <span>RealTalk agent widget, gold square UI</span>
+        </div>
+      </div>
+      <div class="row" style="margin:0;">
+        <button class="btn secondary" id="fsBtn" type="button">Fullscreen</button>
+      </div>
+    </header>
 
-      <section class="grid">
-        <article class="tile">
-          <div class="inner">
-            <h2>Audio Native</h2>
-            <p>Narrates page content or plays configured Audio Native output. Requires URL allowlist in ElevenLabs.</p>
-            <div class="divider"></div>
-            <div class="box" style="align-items:stretch; justify-content:stretch;">
-              <div
-                id="elevenlabs-audionative-widget"
-                data-height="90"
-                data-width="100%"
-                data-frameborder="no"
-                data-scrolling="no"
-                data-publicuserid="30cb26c1b3cae8d134c901db5803540a3b23471f2ce7731b1505ff95ad4148b1"
-                data-playerurl="https://elevenlabs.io/player/index.html"
-              >
-                Loading the <a href="https://elevenlabs.io/text-to-speech" target="_blank" rel="noopener" style="color:var(--gold); text-decoration:none;">ElevenLabs TTS</a> Audio Native Player...
-              </div>
+    <main>
+      <section class="panel talkPanel">
+        <div class="stage" aria-label="Talk to your agent">
+          <div class="stageTop">
+            <div class="pill"><b>Agent</b> agent_1101kdsa6hh7fkm8mrv32fv97wzv</div>
+            <div class="row" style="margin:0;">
+              <button class="btn secondary" id="speakerMuteBtn" type="button">Speaker: On</button>
             </div>
-            <p>Allowlist: add https://florisvdo1.github.io in Audio Native settings.</p>
           </div>
-        </article>
 
-        <article class="tile">
-          <div class="inner">
-            <h2>Talk to Floris</h2>
-            <p>Real conversation widget. Requires public agent with auth disabled, plus domain allowlist in agent Security.</p>
-            <div class="divider"></div>
-            <div class="box" style="align-items:stretch; justify-content:stretch;">
+          <div class="stageBody">
+            <div class="whiteFrame">
+              <!-- IMPORTANT:
+                   Do NOT add override-voice-id here, it caused your error.
+                   Set the voice inside your agent settings in ElevenLabs. -->
               <elevenlabs-convai
                 agent-id="agent_1101kdsa6hh7fkm8mrv32fv97wzv"
                 variant="expanded"
-                avatar-orb-color-1="#d4b46a"
-                avatar-orb-color-2="#0a0a0a"
+                avatar-orb-color-1="#d7b56d"
+                avatar-orb-color-2="#0b0b0b"
                 action-text="Talk"
                 start-call-text="Start"
                 end-call-text="End"
                 listening-text="Listening..."
                 speaking-text="Speaking..."
-                override-voice-id="PmLHtxMMIsD2g8fMxY7f"
               ></elevenlabs-convai>
             </div>
-            <p>Allowlist: add florisvdo1.github.io in the agent Security tab.</p>
           </div>
-        </article>
+        </div>
       </section>
 
-      <footer>Single-file GitHub Pages build.</footer>
-    </div>
+      <aside class="panel sidePanel">
+        <div class="tile">
+          <h3>Volume</h3>
+          <p>Host-side boost, best effort. If the widget audio is not accessible, use device volume or the widget’s own controls.</p>
+          <input id="vol" type="range" min="0" max="200" value="120" />
+          <div class="note" id="volNote">Set to 120%.</div>
+        </div>
+
+        <div class="tile">
+          <h3>Web search</h3>
+          <p>Opens a new tab, the agent will not automatically “read” results without a backend tool.</p>
+          <div class="searchRow">
+            <input id="q" placeholder="Search the web…" />
+            <button class="btn" id="searchBtn" type="button">Search</button>
+          </div>
+        </div>
+
+        <div class="tile">
+          <h3>What you must set in ElevenLabs</h3>
+          <p>1) In the agent settings, choose your voice clone (PmLHtxMMIsD2g8fMxY7f).</p>
+          <p>2) Allowlist florisvdo1.github.io in the agent’s allowed domains.</p>
+          <p class="note">You cannot force voice_id from the page if overrides are disabled, that is exactly what your error says.</p>
+        </div>
+      </aside>
+    </main>
+
+    <div class="toast" id="toast"></div>
   </div>
 
-  <script src="https://elevenlabs.io/player/audioNativeHelper.js" type="text/javascript"></script>
+  <!-- Widget script, include once -->
   <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
+
+  <script>
+    (function(){
+      const vol = document.getElementById("vol");
+      const volNote = document.getElementById("volNote");
+      const speakerMuteBtn = document.getElementById("speakerMuteBtn");
+      const fsBtn = document.getElementById("fsBtn");
+      const toast = document.getElementById("toast");
+
+      const q = document.getElementById("q");
+      const searchBtn = document.getElementById("searchBtn");
+
+      let muted = false;
+      let gainValue = 1.2; // 120% default
+      let audioContext = null;
+      let gainedElements = new WeakSet();
+
+      function showToast(msg){
+        toast.textContent = msg;
+        toast.classList.add("show");
+        clearTimeout(showToast._t);
+        showToast._t = setTimeout(() => toast.classList.remove("show"), 2600);
+      }
+
+      function tryFullscreen(){
+        const root = document.documentElement;
+        if (!document.fullscreenElement){
+          root.requestFullscreen?.().catch(() => showToast("Fullscreen not available here."));
+        } else {
+          document.exitFullscreen?.();
+        }
+      }
+
+      function webSearch(){
+        const query = (q.value || "").trim();
+        if (!query) return;
+        window.open("https://duckduckgo.com/?q=" + encodeURIComponent(query), "_blank", "noopener,noreferrer");
+      }
+
+      // Best-effort: find <audio> elements, including inside open shadow roots, and apply WebAudio gain up to 2.0.
+      // If the widget uses closed shadow DOM or its own audio pipeline, this will not affect it.
+      function walk(node, out){
+        if (!node) return;
+        out.push(node);
+
+        // Traverse shadow root if open
+        if (node.shadowRoot){
+          walk(node.shadowRoot, out);
+        }
+
+        // Traverse children
+        if (node.children){
+          for (const child of node.children) walk(child, out);
+        }
+
+        // Traverse shadow root childNodes if any
+        if (node.childNodes){
+          for (const cn of node.childNodes){
+            if (cn.nodeType === 1) walk(cn, out);
+          }
+        }
+      }
+
+      function ensureAudioContext(){
+        if (!audioContext){
+          audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioContext.state === "suspended"){
+          audioContext.resume().catch(()=>{});
+        }
+      }
+
+      function applyGainToAudioElement(aud){
+        try{
+          if (gainedElements.has(aud)) return;
+          ensureAudioContext();
+
+          // Skip if element is cross-origin protected or already connected
+          const source = audioContext.createMediaElementSource(aud);
+          const gain = audioContext.createGain();
+          gain.gain.value = muted ? 0 : gainValue;
+
+          source.connect(gain);
+          gain.connect(audioContext.destination);
+
+          // Store references on element for later updates
+          aud.__oever_gain = gain;
+          gainedElements.add(aud);
+        } catch (e){
+          // Ignore, means we cannot hook it (common)
+        }
+      }
+
+      function refreshAudioHooks(){
+        const nodes = [];
+        walk(document.documentElement, nodes);
+
+        for (const n of nodes){
+          if (n && n.tagName === "AUDIO"){
+            applyGainToAudioElement(n);
+          }
+        }
+
+        // Also update gains we already attached
+        const audios = document.querySelectorAll("audio");
+        for (const a of audios){
+          if (a.__oever_gain){
+            a.__oever_gain.gain.value = muted ? 0 : gainValue;
+          }
+        }
+      }
+
+      function setVolumeFromSlider(){
+        const v = Number(vol.value);
+        gainValue = Math.max(0, Math.min(2, v / 100)); // 0..2.0 (200%)
+        volNote.textContent = "Set to " + v + "%.";
+        refreshAudioHooks();
+      }
+
+      function toggleSpeakerMute(){
+        muted = !muted;
+        speakerMuteBtn.textContent = muted ? "Speaker: Muted" : "Speaker: On";
+        refreshAudioHooks();
+        showToast(muted ? "Speaker muted" : "Speaker on");
+      }
+
+      // User gesture required for AudioContext on iOS
+      document.addEventListener("click", () => {
+        ensureAudioContext();
+        refreshAudioHooks();
+      }, { once:true });
+
+      // Keep attempting to hook audio as the widget boots
+      const mo = new MutationObserver(() => refreshAudioHooks());
+      mo.observe(document.documentElement, { childList:true, subtree:true });
+
+      vol.addEventListener("input", setVolumeFromSlider);
+      speakerMuteBtn.addEventListener("click", toggleSpeakerMute);
+      fsBtn.addEventListener("click", tryFullscreen);
+
+      searchBtn.addEventListener("click", webSearch);
+      q.addEventListener("keydown", (e) => { if (e.key === "Enter") webSearch(); });
+
+      // Init
+      setVolumeFromSlider();
+      refreshAudioHooks();
+    })();
+  </script>
 </body>
 </html>
